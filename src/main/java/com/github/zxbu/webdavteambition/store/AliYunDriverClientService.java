@@ -9,6 +9,7 @@ import com.github.zxbu.webdavteambition.model.*;
 import com.github.zxbu.webdavteambition.model.result.TFile;
 import com.github.zxbu.webdavteambition.model.result.TFileListResult;
 import com.github.zxbu.webdavteambition.model.result.UploadPreResult;
+import com.github.zxbu.webdavteambition.util.EncryptUtil;
 import com.github.zxbu.webdavteambition.util.JsonUtil;
 import net.sf.webdav.exceptions.WebdavException;
 import okhttp3.HttpUrl;
@@ -122,7 +123,24 @@ public class AliYunDriverClientService {
         // 如果已存在，先删除
         TFile tfile = getTFileByPath(path);
         if (tfile != null) {
+
             if (tfile.getSize() == size) {
+
+                //check if content hash equals , if not then remove
+                if (tfile.getContent_hash_name().equals("sha1")) {
+                    try {
+                        String localFileSha1 = EncryptUtil.createSha1(inputStream);
+                        LOGGER.info("文件:{},本地hash:{},远程hash:{}", tfile.getName(), localFileSha1, tfile.getContent_hash());
+                        if (localFileSha1.equals(tfile.getContent_hash())) {
+                            return;
+                        } else {
+                            remove(path);
+                        }
+                    } catch (Exception ex) {
+                        remove(path);
+                    }
+                }
+
                 //如果文件大小一样，则不再上传
                 return;
             }

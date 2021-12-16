@@ -20,6 +20,8 @@ public class TFile {
     private String url;
     private Long size;
     private String download_url;
+    private String content_hash_name;
+    private String content_hash;
 
     public Date getCreated_at() {
         return created_at;
@@ -148,4 +150,8 @@ public class TFile {
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
     }
+
+    public String getContent_hash_name() { return content_hash_name; }
+
+    public String getContent_hash() { return content_hash; }
 }
